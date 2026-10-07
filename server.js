@@ -37,18 +37,33 @@ function save() {
 setInterval(save, SAVE_EVERY_MS);
 
 const indexHtml = fs.readFileSync(path.join(__dirname, "public", "index.html"));
+let cardPng = null;
+try {
+  cardPng = fs.readFileSync(path.join(__dirname, "public", "card.png"));
+} catch (_) {
+  /* card image is optional */
+}
 
 const server = http.createServer((req, res) => {
-  if (req.url === "/healthz") {
+  const p = (req.url || "/").split("?")[0];
+  if (p === "/healthz") {
     res.writeHead(200, { "content-type": "text/plain" });
     return res.end("ok");
   }
-  if (req.url === "/" || req.url.startsWith("/?")) {
+  // "/" is the full page, "/play" is the same page in compact mode for the X player card
+  if (p === "/" || p === "/play") {
     res.writeHead(200, {
       "content-type": "text/html; charset=utf-8",
       "cache-control": "no-cache",
     });
     return res.end(indexHtml);
+  }
+  if (p === "/card.png" && cardPng) {
+    res.writeHead(200, {
+      "content-type": "image/png",
+      "cache-control": "public, max-age=3600",
+    });
+    return res.end(cardPng);
   }
   res.writeHead(404, { "content-type": "text/plain" });
   res.end("not found");
