@@ -7,6 +7,16 @@
 <meta name="description" content="One shared pixel canvas. Everyone online paints it live.">
 <meta property="og:title" content="THE WALL">
 <meta property="og:description" content="One shared pixel canvas. Everyone online paints it live.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://the-wall-8ief.onrender.com/">
+<meta property="og:image" content="https://the-wall-8ief.onrender.com/card.png">
+<meta name="twitter:card" content="player">
+<meta name="twitter:title" content="THE WALL">
+<meta name="twitter:description" content="Everyone who opens this embed paints the same wall.">
+<meta name="twitter:image" content="https://the-wall-8ief.onrender.com/card.png">
+<meta name="twitter:player" content="https://the-wall-8ief.onrender.com/play">
+<meta name="twitter:player:width" content="565">
+<meta name="twitter:player:height" content="565">
 <meta name="theme-color" content="#0d0e12">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -109,6 +119,16 @@
   .brand { color: var(--dim); font-size: 12px; letter-spacing: .06em; }
   .brand b { color: var(--fg); font-weight: 500; }
   @media (max-width: 420px) { .palette { grid-template-columns: repeat(8, 1fr); gap: 4px; } }
+
+  /* Embed mode (/play): fits the square frame X gives a player card. Square canvas, one palette row, online count on the canvas. */
+  html.embed body { padding: 8px; gap: 0; min-height: 100vh; justify-content: flex-start; }
+  html.embed .col { max-width: none; gap: 8px; align-items: center; }
+  html.embed header, html.embed .tray .row, html.embed .col > .row { display: none; }
+  html.embed .stage { width: min(100%, calc(100vh - 62px)); }
+  html.embed .tray { width: min(100%, calc(100vh - 62px)); padding: 6px; background: transparent; border: 0; }
+  html.embed .palette { grid-template-columns: repeat(16, 1fr); gap: 3px; }
+  html.embed .stats { position: absolute; top: 6px; left: 6px; z-index: 3; pointer-events: none; gap: 10px; font-size: 11px; padding: 4px 8px; background: rgba(13,14,18,.82); }
+  html.embed .veil { font-size: 14px; }
   @media (prefers-reduced-motion: reduce) { .peer { transition: none; } }
 </style>
 </head>
@@ -166,6 +186,12 @@
   var dot = document.getElementById("dot");
   var statusEl = document.getElementById("status");
   var palette = document.getElementById("palette");
+
+  // compact mode for the X player card: same game, square layout
+  if (location.pathname === "/play") {
+    document.documentElement.classList.add("embed");
+    stage.appendChild(document.querySelector(".stats"));
+  }
 
   // palette
   COLORS.forEach(function (hex, i) {
